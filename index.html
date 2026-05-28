@@ -268,7 +268,7 @@
 
         .action-buttons {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .btn-print {
@@ -287,7 +287,6 @@
             color: #000;
         }
 
-        /* TOMBOL HAPUS BARU */
         .btn-delete {
             background: rgba(255, 0, 85, 0.15);
             border: 1px solid var(--danger-neon);
@@ -307,46 +306,24 @@
 
         .hidden { display: none !important; }
 
-        /* FIX FITUR CETAK AGAR TIDAK HITAM & BLANK */
+        /* PERBAIKAN TOTAL LAYANAN CETAK AGAR JAUH DARI BLANK HITAM */
         @media print {
             body { 
-                background: #fff !important; 
-                color: #000 !important; 
+                background: #ffffff !important; 
+                color: #000000 !important; 
             }
-            body * { 
-                visibility: hidden; 
+            .container, header, .nav-wrapper, #sectionPendaftaran, #sectionPasswordGate, #sectionAdmin {
+                display: none !important;
             }
             #printArea { 
-                visibility: visible !important; 
                 display: block !important; 
                 position: absolute;
                 left: 0; 
                 top: 0; 
                 width: 100%;
-                color: #000 !important;
-                background: #fff !important;
-                padding: 20px;
-            }
-            #printArea * { 
-                visibility: visible !important; 
-                color: #000 !important;
-            }
-            #printArea table { 
-                display: table !important; 
-                width: 100%; 
-            }
-            #printArea tr { 
-                display: table-row !important; 
-            }
-            #printArea th, #printArea td { 
-                display: table-cell !important; 
-                border: 1px solid #000 !important; 
-                padding: 10px !important; 
-                color: #000 !important;
-                background: transparent !important;
-            }
-            .no-print { 
-                display: none !important; 
+                color: #000000 !important;
+                background: #ffffff !important;
+                padding: 10px;
             }
             .print-header {
                 text-align: center;
@@ -354,10 +331,25 @@
                 padding-bottom: 10px;
                 margin-bottom: 20px;
             }
+            .print-header h2 { font-size: 1.6rem; font-weight: bold; color: #000 !important;}
+            .print-header h3 { font-size: 1.1rem; color: #000 !important; margin-top: 5px;}
+            
             .print-table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 20px;
+                margin-top: 15px;
+            }
+            .print-table th, .print-table td {
+                border: 1px solid #000000 !important;
+                padding: 8px 12px !
+                important;
+                color: #000000 !important;
+                background: transparent !important;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f2f2f2 !important;
+                font-weight: bold;
             }
         }
     </style>
@@ -367,7 +359,7 @@
     <div class="container">
         <header>
             <div class="logo-container">
-                <img src="logo.png" alt="Logo UPTD SDN 21 Sanggalea" class="logo-high-tech" onerror="this.style.display='none'; console.log('logo.png tidak ditemukan');">
+                <img src="logo.png" alt="Logo UPTD SDN 21 Sanggalea" class="logo-high-tech" onerror="this.style.display='none';">
             </div>
             <h1>BUKU PENDAFTARAN SPMB TAHUN 2026</h1>
             <p>UPTD SDN 21 SANGGALEA</p>
@@ -389,6 +381,8 @@
                         <div class="form-group">
                             <label>Nomor Pendaftaran</label>
                             <input type="text" id="nomor_pendaftaran" placeholder="Contoh: 2026-001" required>
+                        </div>
+                        <div class="form-family">
                         </div>
                         <div class="form-group">
                             <label>Nama Lengkap Siswa</label>
@@ -441,7 +435,7 @@
                             <input type="text" id="pendidikan_ayah" placeholder="Contoh: SMA / S1" required>
                         </div>
                         <div class="form-group">
-                            <label>Pendapatan Ayah (Per Bulan)</label>
+                            <label>Pendapatan / Pekerjaan Ayah</label>
                             <input type="text" id="pendapatan_ayah" placeholder="Masukkan pendapatan / pekerjaan">
                         </div>
                         <div class="form-group">
@@ -475,7 +469,7 @@
                             <input type="text" id="pendidikan_ibu" placeholder="Contoh: SMA / S1" required>
                         </div>
                         <div class="form-group">
-                            <label>Pendapatan Ibu (Per Bulan)</label>
+                            <label>Pendapatan / Pekerjaan Ibu</label>
                             <input type="text" id="pendapatan_ibu" placeholder="Kosongkan jika Ibu Rumah Tangga">
                         </div>
                         <div class="form-group">
@@ -501,7 +495,7 @@
         <div id="sectionPasswordGate" class="panel-card secure-gate hidden">
             <i class="fa-solid fa-shield-halved"></i>
             <h3 style="font-family:'Orbitron'; margin-bottom: 10px; font-size:1.1rem; color:var(--danger-neon)">RESTRICTED AREA</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Password:</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Masukkan Kata Sandi Panel Rekapitulasi Admin:</p>
             <div class="form-group" style="margin-bottom: 15px;">
                 <input type="password" id="adminPasswordInput" placeholder="••••••••" style="text-align: center; letter-spacing: 4px;">
             </div>
@@ -512,8 +506,8 @@
 
         <div id="sectionAdmin" class="panel-card hidden">
             <h2><i class="fa-solid fa-database"></i> Panel Admin Database Pendaftaran</h2>
-            <div style="margin-bottom: 15px; display:flex; gap:10px;">
-                <button class="btn-print" onclick="printAll()"><i class="fa-solid fa-print"></i> Cetak Semua Data</button>
+            <div style="margin-bottom: 20px; display:flex; gap:10px;">
+                <button class="btn-print" onclick="printAll()"><i class="fa-solid fa-print"></i> Cetak Semua Rekapan</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -526,7 +520,7 @@
                             <th>Nama Ayah</th>
                             <th>Nama Ibu</th>
                             <th>Petugas</th>
-                            <th class="no-print">Aksi</th>
+                            <th class="no-print">Aksi Interaktif</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -537,19 +531,20 @@
 
     </div>
 
-    <div id="printArea" class="hidden"></div>
+    <div id="printArea" style="display: none;"></div>
 
     <script>
+        // CONFIG SUPABASE CLIENT FIXED
         const SUPABASE_URL = "https://wylkasidfbfhowozcuce.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bGthc2lkZmJmaG93b3pjdWNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1OTc2ODAsImV4cCI6MjA5NTE3MzY4MH0.JGkdTtl3Nh1LcDeR_dzC1lMiA_IslkQQ3QJFtu3u07A";
         const ADMIN_PASSWORD_KEY = "admin21sanggalea"; 
 
         let supabaseClient = null;
         if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
+            // Membawa Client Global
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } else {
-            console.warn("Supabase belum dikonfigurasi dengan URL yang valid.");
-            document.getElementById('sysStatus').innerText = "LOCAL MODE (NO DATABASE)";
+            document.getElementById('sysStatus').innerText = "OFFLINE MODE";
             document.getElementById('sysStatus').style.color = "#ffaa00";
         }
 
@@ -603,7 +598,7 @@
                 
                 fetchData(); 
             } else {
-                alert("DEKRIPSI GAGAL: Kode Akses Salah / Akses Ditolak!");
+                alert("SANDI SALAH: Akses Menuju Database Rekapitulasi Ditolak!");
                 document.getElementById('adminPasswordInput').value = "";
                 document.getElementById('adminPasswordInput').focus();
             }
@@ -611,12 +606,9 @@
 
         async function fetchData() {
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Memuat Data Matrix...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Mengunduh Berkas Pendaftaran Supabase...</td></tr>`;
 
-            if(!supabaseClient) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ffaa00;">Aplikasi berjalan offline. Supabase URL belum diisi di dalam kode script.</td></tr>`;
-                return;
-            }
+            if(!supabaseClient) return;
 
             try {
                 const { data, error } = await supabaseClient
@@ -630,7 +622,7 @@
                 tbody.innerHTML = "";
 
                 if(data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada pendaftar di database.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada riwayat pendaftaran terkumpul.</td></tr>`;
                     return;
                 }
 
@@ -647,22 +639,21 @@
                         <td class="no-print">
                             <div class="action-buttons">
                                 <button class="btn-print" onclick="printSingle('${item.id}')"><i class="fa-solid fa-print"></i> Cetak</button>
-                                <button class="btn-delete" onclick="deleteRecord('${item.id}', '${item.nama_siswa}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                <button class="btn-delete" onclick="deleteRecord('${item.id}', '${item.nama_siswa}')"><i class="fa-solid fa-trash-can"></i> Hapus</button>
                             </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
             } catch (err) {
-                console.error("Gagal Mengambil Data:", err);
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger-neon);">Gagal terhubung ke database Supabase. Periksa API key Anda!</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger-neon);">Koneksi terputus ke database Supabase.</td></tr>`;
             }
         }
 
-        // FUNGSI UNTUK MENGHAPUS DATA DARI DATABASE SUPABASE
+        // FUNGSI UTAMA HAPUS DATA (DENGAN SUPABASE CLIENT FIXED)
         async function deleteRecord(id, namaSiswa) {
-            const konfirmasi = confirm(`Apakah Anda yakin ingin menghapus data pendaftaran atas nama "${namaSiswa}" secara permanen dari database?`);
-            if (!konfirmasi) return;
+            const tanya = confirm(`PERINGATAN TINGKAT TINGGI:\n\nApakah Anda yakin ingin menghapus data calon siswa bernama "${namaSiswa}" dari database secara permanen?`);
+            if (!tanya) return;
 
             try {
                 const { error } = await supabaseClient
@@ -672,10 +663,10 @@
 
                 if (error) throw error;
 
-                alert(`Data pendaftaran "${namaSiswa}" berhasil dihapus!`);
-                fetchData(); // Muat ulang tabel setelah sukses menghapus
+                alert(`Berhasil! Data pendaftaran "${namaSiswa}" telah dihapus.`);
+                fetchData(); // refresh rekap tabel otomatis
             } catch (err) {
-                alert("Gagal menghapus data! Detail: " + err.message);
+                alert("Gagal menghapus! Pastikan Anda sudah menjalankan query RLS Delete di Supabase.\nDetail: " + err.message);
             }
         }
 
@@ -704,12 +695,6 @@
                 nama_petugas: document.getElementById('nama_petugas').value
             };
 
-            if(!supabaseClient) {
-                alert("Aplikasi Berjalan Offline Lokal!\nData pendaftaran sukses disimulasikan.");
-                document.getElementById('formSpmb').reset();
-                return;
-            }
-
             try {
                 const { data, error } = await supabaseClient
                     .from('pendaftaran_spmb_2026')
@@ -720,7 +705,7 @@
                 alert("Data Calon Peserta Didik Berhasil Disimpan ke Supabase!");
                 document.getElementById('formSpmb').reset();
             } catch (err) {
-                alert("Gagal menyimpan data! Periksa konfigurasi database Supabase Anda.\nDetail: " + err.message);
+                alert("Gagal menyimpan data!\nDetail: " + err.message);
             }
         }
 
@@ -734,7 +719,7 @@
                     <h2>UPTD SDN 21 SANGGALEA</h2>
                     <h3>BUKTI PENDAFTARAN SISWA BARU (SPMB TAHUN 2026)</h3>
                 </div>
-                <table class="print-table" style="margin-top:20px;">
+                <table class="print-table">
                     <tr><td width="35%"><b>Nomor Pendaftaran</b></td><td>${item.nomor_pendaftaran}</td></tr>
                     <tr><td><b>Nama Lengkap Siswa</b></td><td>${item.nama_siswa}</td></tr>
                     <tr><td><b>Jenis Kelamin</b></td><td>${item.jenis_kelamin}</td></tr>
@@ -742,22 +727,22 @@
                     <tr><td><b>Asal Sekolah (TK/PAUD)</b></td><td>${item.asal_sekolah}</td></tr>
                     <tr><td><b>No. HP / WhatsApp</b></td><td>${item.no_hp}</td></tr>
                     
-                    <tr><td colspan="2" style="background:#f0f0f0; font-weight:bold;">DATA ORANG TUA (AYAH)</td></tr>
+                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA ORANG TUA (AYAH)</td></tr>
                     <tr><td><b>Nama Ayah</b></td><td>${item.nama_ayah} (${item.keadaan_ayah})</td></tr>
                     <tr><td><b>Tahun Lahir / Pendidikan</b></td><td>${item.tahun_lahir_ayah} / ${item.pendidikan_ayah}</td></tr>
                     <tr><td><b>Pekerjaan / Pendapatan</b></td><td>${item.pendapatan_ayah}</td></tr>
                     <tr><td><b>Alamat Lengkap Ayah</b></td><td>${item.alamat_ayah}</td></tr>
                     
-                    <tr><td colspan="2" style="background:#f0f0f0; font-weight:bold;">DATA ORANG TUA (IBU)</td></tr>
+                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA ORANG TUA (IBU)</td></tr>
                     <tr><td><b>Nama Ibu</b></td><td>${item.nama_ibu} (${item.keadaan_ibu})</td></tr>
                     <tr><td><b>Tahun Lahir / Pendidikan</b></td><td>${item.tahun_lahir_ibu} / ${item.pendidikan_ibu}</td></tr>
                     <tr><td><b>Pekerjaan / Pendapatan</b></td><td>${item.pendapatan_ibu}</td></tr>
                     <tr><td><b>Alamat Lengkap Ibu</b></td><td>${item.alamat_ibu}</td></tr>
                     
-                    <tr><td colspan="2" style="background:#f0f0f0; font-weight:bold;">VALIDASI DATA</td></tr>
+                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">VALIDASI DATA</td></tr>
                     <tr><td><b>Petugas Penerima</b></td><td>${item.nama_petugas}</td></tr>
                 </table>
-                <div style="margin-top:40px; text-align:right;">
+                <div style="margin-top:40px; text-align:right; font-family:sans-serif;">
                     <p>Sanggalea, ____________ 2026</p>
                     <br><br><br>
                     <p>( ________________________ )</p>
@@ -779,7 +764,7 @@
                         <td>${index + 1}</td>
                         <td>${item.nomor_pendaftaran}</td>
                         <td>${item.nama_siswa}</td>
-                        <td>${item.jenis_kelamin}</td>
+                        <td>${item.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
                         <td>${item.no_hp}</td>
                         <td>${item.nama_ayah}</td>
                         <td>${item.nama_ibu}</td>
