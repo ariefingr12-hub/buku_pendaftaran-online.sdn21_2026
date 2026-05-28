@@ -15,6 +15,7 @@
             --primary-neon: #00f2fe;
             --secondary-neon: #4facfe;
             --success-neon: #00ff87;
+            --danger-neon: #ff0055;
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
             --border-glow: rgba(0, 242, 254, 0.2);
@@ -66,7 +67,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* STYLE LOGO IMAGE DARI GITHUB */
         .logo-container {
             margin-bottom: 15px;
             display: flex;
@@ -133,7 +133,7 @@
             box-shadow: 0 0 15px var(--primary-neon);
         }
 
-        /* FORM STYLE (GLASSMORPHISM) */
+        /* CARD STYLE (GLASSMORPHISM) */
         .panel-card {
             background: var(--panel-bg);
             backdrop-filter: blur(15px);
@@ -201,6 +201,20 @@
         .form-group select option {
             background: #0f172a;
             color: #fff;
+        }
+
+        /* SECURITY GATE (PASSWORD SCREEN) */
+        .secure-gate {
+            max-width: 400px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .secure-gate i {
+            font-size: 3rem;
+            color: var(--danger-neon);
+            text-shadow: 0 0 15px var(--danger-neon);
+            margin-bottom: 15px;
         }
 
         /* BUTTON ACTION */
@@ -275,7 +289,7 @@
             color: #000;
         }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
         /* PRINT STYLESHEET OPTIMIZATION */
         @media print {
@@ -313,16 +327,15 @@
     <div class="container">
         <header>
             <div class="logo-container">
-                <img src="logo.png" alt="Logo UPTD SDN 21 Sanggalea" class="logo-high-tech" onerror="this.style.display='none'; console.log('Logo.png belum ditemukan di direktori yang sama');">
+                <img src="logo.png" alt="Logo UPTD SDN 21 Sanggalea" class="logo-high-tech" onerror="this.style.display='none'; console.log('logo.png tidak ditemukan, pastikan diletakkan di satu folder yang sama di GitHub');">
             </div>
-
             <h1>BUKU PENDAFTARAN SPMB TAHUN 2026</h1>
             <p>UPTD SDN 21 SANGGALEA</p>
         </header>
 
         <div class="nav-wrapper">
-            <span style="font-family:'Rajdhani'; color: var(--text-muted)">SYSTEM STATUS: <span style="color:var(--success-neon)">ONLINE</span></span>
-            <button class="btn-toggle" id="btnTogglePanel" onclick="togglePanel()">
+            <span style="font-family:'Rajdhani'; color: var(--text-muted)">SYSTEM STATUS: <span id="sysStatus" style="color:var(--success-neon)">ONLINE</span></span>
+            <button class="btn-toggle" id="btnTogglePanel" onclick="handleNavigation()">
                 <i class="fa-solid fa-user-gear"></i> Ke Panel Admin
             </button>
         </div>
@@ -442,8 +455,19 @@
                     </div>
                     <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Submit Data Pendaftaran</button>
                 </div>
-
             </form>
+        </div>
+
+        <div id="sectionPasswordGate" class="panel-card secure-gate hidden">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3 style="font-family:'Orbitron'; margin-bottom: 10px; font-size:1.1rem; color:var(--danger-neon)">RESTRICTED AREA</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Masukkan Kode Akses Administrasi Terenkripsi</p>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <input type="password" id="adminPasswordInput" placeholder="••••••••" style="text-align: center; letter-spacing: 4px;">
+            </div>
+            <button class="btn-submit" onclick="verifyAdminPassword()" style="background: linear-gradient(135deg, var(--primary-neon) 0%, var(--secondary-neon) 100%); color:#000;">
+                DECRYPT & ENTER
+            </button>
         </div>
 
         <div id="sectionAdmin" class="panel-card hidden">
@@ -476,77 +500,136 @@
     <div id="printArea" class="hidden"></div>
 
     <script>
-        // TODO: GANTI DENGAN KREDENSIAL SUPABASE ANDA SENDIRI
+        // ==========================================
+        // CONFIG KREDENSIAL (GANTI DENGAN MILIK ANDA)
+        // ==========================================
         const SUPABASE_URL = "https://YOUR_SUPABASE_PROJECT_URL.supabase.co";
         const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
         
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // PASSWORD PANEL ADMIN (BISA ANDA GANTI SESUAI KEINGINAN)
+        const ADMIN_PASSWORD_KEY = "adminspmb2026"; 
 
-        let currentView = "pendaftaran";
+        // Inisialisasi Supabase
+        let supabase = null;
+        if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
+            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.warn("Supabase belum dikonfigurasi dengan URL yang valid.");
+            document.getElementById('sysStatus').innerText = "LOCAL MODE (NO DATABASE)";
+            document.getElementById('sysStatus').style.color = "#ffaa00";
+        }
+
+        let currentView = "pendaftaran"; // State views: pendaftaran, security_gate, admin
+        let isAdminAuthenticated = false; // State auth panel admin
         let localDataStore = [];
 
-        fetchData();
-
-        function togglePanel() {
+        // Fungsi Handler Tombol Navigasi Utama
+        function handleNavigation() {
             const btn = document.getElementById('btnTogglePanel');
             const secPendaftaran = document.getElementById('sectionPendaftaran');
+            const secPasswordGate = document.getElementById('sectionPasswordGate');
             const secAdmin = document.getElementById('sectionAdmin');
 
-            if(currentView === "pendaftaran") {
-                currentView = "admin";
-                btn.innerHTML = `<i class="fa-solid fa-file-pen"></i> Ke Form Pendaftaran`;
-                secPendaftaran.classList.add('hidden');
-                secAdmin.classList.remove('hidden');
-                fetchData();
-            } else {
+            if (currentView === "pendaftaran") {
+                // Jika admin sudah pernah login sebelumnya
+                if (isAdminAuthenticated) {
+                    currentView = "admin";
+                    btn.innerHTML = `<i class="fa-solid fa-file-pen"></i> Ke Form Pendaftaran`;
+                    secPendaftaran.classList.add('hidden');
+                    secAdmin.classList.remove('hidden');
+                    fetchData();
+                } else {
+                    // Masuk ke screen cek password
+                    currentView = "security_gate";
+                    btn.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Kembali`;
+                    secPendaftaran.classList.add('hidden');
+                    secPasswordGate.classList.remove('hidden');
+                    document.getElementById('adminPasswordInput').focus();
+                }
+            } else if (currentView === "security_gate" || currentView === "admin") {
+                // Kembali ke form pendaftaran awal
                 currentView = "pendaftaran";
                 btn.innerHTML = `<i class="fa-solid fa-user-gear"></i> Ke Panel Admin`;
                 secPendaftaran.classList.remove('hidden');
+                secPasswordGate.classList.add('hidden');
                 secAdmin.classList.add('hidden');
+                document.getElementById('adminPasswordInput').value = "";
             }
         }
 
+        // Verifikasi Password Gate
+        function verifyAdminPassword() {
+            const inputPass = document.getElementById('adminPasswordInput').value;
+            const secPasswordGate = document.getElementById('sectionPasswordGate');
+            const secAdmin = document.getElementById('sectionAdmin');
+            const btn = document.getElementById('btnTogglePanel');
+
+            if (inputPass === ADMIN_PASSWORD_KEY) {
+                isAdminAuthenticated = true;
+                currentView = "admin";
+                
+                // Ubah Tampilan UI
+                secPasswordGate.classList.add('hidden');
+                secAdmin.classList.remove('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-file-pen"></i> Ke Form Pendaftaran`;
+                
+                fetchData(); // Muat data dari Supabase
+            } else {
+                alert("DEKRIPSI GAGAL: Kode Akses Salah / Akses Ditolak!");
+                document.getElementById('adminPasswordInput').value = "";
+                document.getElementById('adminPasswordInput').focus();
+            }
+        }
+
+        // Ambil Data dari Supabase
         async function fetchData() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Memuat Data Matrix...</td></tr>`;
 
-            const { data, error } = await supabase
-                .from('pendaftaran_spmb_2026')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error("Gagal Mengambil Data:", error);
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff4a4a;">Error koneksi database.</td></tr>`;
+            if(!supabase) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ffaa00;">Aplikasi berjalan offline. Supabase URL belum diisi di dalam kode script.</td></tr>`;
                 return;
             }
 
-            localDataStore = data;
-            tbody.innerHTML = "";
+            try {
+                const { data, error } = await supabase
+                    .from('pendaftaran_spmb_2026')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada pendaftar.</td></tr>`;
-                return;
+                if (error) throw error;
+
+                localDataStore = data;
+                tbody.innerHTML = "";
+
+                if(data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada pendaftar di database.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${item.nomor_pendaftaran}</b></td>
+                        <td>${item.nama_siswa}</td>
+                        <td>${item.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
+                        <td>${item.no_hp}</td>
+                        <td>${item.nama_ayah || '-'}</td>
+                        <td>${item.nama_ibu}</td>
+                        <td>${item.nama_petugas}</td>
+                        <td class="no-print">
+                            <button class="btn-print" onclick="printSingle('${item.id}')"><i class="fa-solid fa-print"></i> Cetak</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Gagal Mengambil Data:", err);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger-neon);">Gagal terhubung ke database Supabase. Periksa API key Anda!</td></tr>`;
             }
-
-            data.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${item.nomor_pendaftaran}</b></td>
-                    <td>${item.nama_siswa}</td>
-                    <td>${item.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
-                    <td>${item.no_hp}</td>
-                    <td>${item.nama_ayah || '-'}</td>
-                    <td>${item.nama_ibu}</td>
-                    <td>${item.nama_petugas}</td>
-                    <td class="no-print">
-                        <button class="btn-print" onclick="printSingle('${item.id}')"><i class="fa-solid fa-print"></i> Cetak</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
         }
 
+        // Kirim Data Pendaftaran Baru
         async function handleSubmit(event) {
             event.preventDefault();
 
@@ -575,19 +658,27 @@
                 nama_petugas: document.getElementById('nama_petugas').value
             };
 
-            const { data, error } = await supabase
-                .from('pendaftaran_spmb_2026')
-                .insert([payload]);
+            if(!supabase) {
+                alert("Aplikasi Berjalan Offline Lokal!\nData pendaftaran sukses disimulasikan (belum tersimpan ke Supabase karena URL kosong).");
+                document.getElementById('formSpmb').reset();
+                return;
+            }
 
-            if (error) {
-                alert("Gagal menyimpan data! Periksa konfigurasi database Supabase Anda.\nDetail: " + error.message);
-            } else {
+            try {
+                const { data, error } = await supabase
+                    .from('pendaftaran_spmb_2026')
+                    .insert([payload]);
+
+                if (error) throw error;
+
                 alert("Data Calon Peserta Didik Berhasil Disimpan ke Supabase!");
                 document.getElementById('formSpmb').reset();
-                fetchData();
+            } catch (err) {
+                alert("Gagal menyimpan data! Periksa konfigurasi database Supabase Anda.\nDetail: " + err.message);
             }
         }
 
+        // CETAK TUNGGAL
         function printSingle(id) {
             const item = localDataStore.find(x => x.id == id);
             if(!item) return;
@@ -631,6 +722,7 @@
             window.print();
         }
 
+        // CETAK SEMUA
         function printAll() {
             if(localDataStore.length === 0) return alert("Tidak ada data untuk dicetak.");
 
@@ -677,6 +769,13 @@
             `;
             window.print();
         }
+
+        // Izinkan menekan tombol 'Enter' untuk verifikasi password
+        document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyAdminPassword();
+            }
+        });
     </script>
 </body>
 </html>
