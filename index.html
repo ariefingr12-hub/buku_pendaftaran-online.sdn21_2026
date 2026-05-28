@@ -461,7 +461,7 @@
         <div id="sectionPasswordGate" class="panel-card secure-gate hidden">
             <i class="fa-solid fa-shield-halved"></i>
             <h3 style="font-family:'Orbitron'; margin-bottom: 10px; font-size:1.1rem; color:var(--danger-neon)">RESTRICTED AREA</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Masukkan Kode Akses Administrasi Terenkripsi</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Password:</p>
             <div class="form-group" style="margin-bottom: 15px;">
                 <input type="password" id="adminPasswordInput" placeholder="••••••••" style="text-align: center; letter-spacing: 4px;">
             </div>
@@ -586,13 +586,13 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Memuat Data Matrix...</td></tr>`;
 
-            if(!supabase) {
+            if(!supabaseClient) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ffaa00;">Aplikasi berjalan offline. Supabase URL belum diisi di dalam kode script.</td></tr>`;
                 return;
             }
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('pendaftaran_spmb_2026')
                     .select('*')
                     .order('created_at', { ascending: false });
@@ -658,7 +658,7 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
                 nama_petugas: document.getElementById('nama_petugas').value
             };
 
-            if(!supabase) {
+            if(!supabaseClient) {
                 alert("Aplikasi Berjalan Offline Lokal!\nData pendaftaran sukses disimulasikan (belum tersimpan ke Supabase karena URL kosong).");
                 document.getElementById('formSpmb').reset();
                 return;
