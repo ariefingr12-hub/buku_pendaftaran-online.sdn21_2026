@@ -66,7 +66,7 @@
             backdrop-filter: blur(10px);
         }
 
-        /* STYLE LOGO SEMATAN */
+        /* STYLE LOGO IMAGE DARI GITHUB */
         .logo-container {
             margin-bottom: 15px;
             display: flex;
@@ -75,15 +75,17 @@
         }
 
         .logo-high-tech {
-            width: 85px;
-            height: 85px;
-            filter: drop-shadow(0 0 8px var(--primary-neon));
+            width: 90px;
+            height: auto;
+            max-height: 100px;
+            filter: drop-shadow(0 0 10px var(--primary-neon));
             animation: logoPulse 3s infinite alternate ease-in-out;
+            object-fit: contain;
         }
 
         @keyframes logoPulse {
             0% { transform: scale(1); filter: drop-shadow(0 0 6px var(--primary-neon)); }
-            100% { transform: scale(1.05); filter: drop-shadow(0 0 16px var(--secondary-neon)); }
+            100% { transform: scale(1.04); filter: drop-shadow(0 0 14px var(--secondary-neon)); }
         }
 
         header h1 {
@@ -311,16 +313,8 @@
     <div class="container">
         <header>
             <div class="logo-container">
-                <svg class="logo-high-tech" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <polygon points="50,5 92,25 92,75 50,95 8,75 8,25" fill="none" stroke="#00f2fe" stroke-width="3"/>
-                    <polygon points="50,13 84,30 84,70 50,87 16,70 16,30" fill="none" stroke="#4facfe" stroke-width="1.5" stroke-dasharray="4 3"/>
-                    <circle cx="50" cy="53" r="18" fill="none" stroke="#00ff87" stroke-width="2"/>
-                    <path d="M38,48 L50,40 L62,48 L50,56 Z" fill="#00f2fe"/>
-                    <path d="M44,51.5 L44,60 C44,63 56,63 56,60 L56,51.5" fill="none" stroke="#00ff87" stroke-width="2"/>
-                    <path d="M62,48 L66,58 L64,59" fill="none" stroke="#00f2fe" stroke-width="1.5"/>
-                </svg>
-                
-                </div>
+                <img src="logo.png" alt="Logo UPTD SDN 21 Sanggalea" class="logo-high-tech" onerror="this.style.display='none'; console.log('Logo.png belum ditemukan di direktori yang sama');">
+            </div>
 
             <h1>BUKU PENDAFTARAN SPMB TAHUN 2026</h1>
             <p>UPTD SDN 21 SANGGALEA</p>
@@ -366,6 +360,40 @@
                         <div class="form-group">
                             <label>No. HP / WhatsApp (Aktif)</label>
                             <input type="text" id="no_hp" placeholder="Contoh: 081234567890" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <h2><i class="fa-solid fa-user-tie"></i> Data Orang Tua (Ayah)</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nama Ayah</label>
+                            <input type="text" id="nama_ayah" placeholder="Masukkan nama ayah" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Keadaan Ayah</label>
+                            <select id="keadaan_ayah" required>
+                                <option value="">-- Pilih Keadaan --</option>
+                                <option value="Hidup">Hidup</option>
+                                <option value="Meninggal">Meninggal Dunia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun Lahir Ayah</label>
+                            <input type="text" id="tahun_lahir_ayah" placeholder="Contoh: 1985" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Pendidikan Terakhir Ayah</label>
+                            <input type="text" id="pendidikan_ayah" placeholder="Contoh: SMA / S1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Pendapatan Ayah (Per Bulan)</label>
+                            <input type="text" id="pendapatan_ayah" placeholder="Masukkan pendapatan / pekerjaan">
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Lengkap Ayah</label>
+                            <input type="text" id="alamat_ayah" placeholder="Jalan, RT/RW, Desa/Kelurahan" required>
                         </div>
                     </div>
                 </div>
@@ -431,6 +459,7 @@
                             <th>Nama Siswa</th>
                             <th>L/P</th>
                             <th>No. HP</th>
+                            <th>Nama Ayah</th>
                             <th>Nama Ibu</th>
                             <th>Petugas</th>
                             <th class="no-print">Aksi</th>
@@ -448,8 +477,8 @@
 
     <script>
         // TODO: GANTI DENGAN KREDENSIAL SUPABASE ANDA SENDIRI
-        const SUPABASE_URL = "https://wylkasidfbfhowozcuce.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bGthc2lkZmJmaG93b3pjdWNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1OTc2ODAsImV4cCI6MjA5NTE3MzY4MH0.JGkdTtl3Nh1LcDeR_dzC1lMiA_IslkQQ3QJFtu3u07A";
+        const SUPABASE_URL = "https://YOUR_SUPABASE_PROJECT_URL.supabase.co";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
         
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -479,7 +508,7 @@
 
         async function fetchData() {
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Memuat Data Matrix...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Memuat Data Matrix...</td></tr>`;
 
             const { data, error } = await supabase
                 .from('pendaftaran_spmb_2026')
@@ -488,7 +517,7 @@
 
             if (error) {
                 console.error("Gagal Mengambil Data:", error);
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#ff4a4a;">Error koneksi database.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff4a4a;">Error koneksi database.</td></tr>`;
                 return;
             }
 
@@ -496,7 +525,7 @@
             tbody.innerHTML = "";
 
             if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Belum ada pendaftar.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada pendaftar.</td></tr>`;
                 return;
             }
 
@@ -507,6 +536,7 @@
                     <td>${item.nama_siswa}</td>
                     <td>${item.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
                     <td>${item.no_hp}</td>
+                    <td>${item.nama_ayah || '-'}</td>
                     <td>${item.nama_ibu}</td>
                     <td>${item.nama_petugas}</td>
                     <td class="no-print">
@@ -527,12 +557,21 @@
                 ttl: document.getElementById('ttl').value,
                 asal_sekolah: document.getElementById('asal_sekolah').value || '-',
                 no_hp: document.getElementById('no_hp').value,
+                // Data Ayah
+                nama_ayah: document.getElementById('nama_ayah').value,
+                keadaan_ayah: document.getElementById('keadaan_ayah').value,
+                tahun_lahir_ayah: document.getElementById('tahun_lahir_ayah').value,
+                pendidikan_ayah: document.getElementById('pendidikan_ayah').value,
+                pendapatan_ayah: document.getElementById('pendapatan_ayah').value || '-',
+                alamat_ayah: document.getElementById('alamat_ayah').value,
+                // Data Ibu
                 nama_ibu: document.getElementById('nama_ibu').value,
                 keadaan_ibu: document.getElementById('keadaan_ibu').value,
                 tahun_lahir_ibu: document.getElementById('tahun_lahir_ibu').value,
                 pendidikan_ibu: document.getElementById('pendidikan_ibu').value,
                 pendapatan_ibu: document.getElementById('pendapatan_ibu').value || 'Ibu Rumah Tangga',
                 alamat_ibu: document.getElementById('alamat_ibu').value,
+                // Admin
                 nama_petugas: document.getElementById('nama_petugas').value
             };
 
@@ -541,9 +580,9 @@
                 .insert([payload]);
 
             if (error) {
-                alert("Gagal menyimpan data! Periksa konfigurasi Supabase Anda.\nDetail: " + error.message);
+                alert("Gagal menyimpan data! Periksa konfigurasi database Supabase Anda.\nDetail: " + error.message);
             } else {
-                alert("Data Calon Peserta Didik Berhasil Disimpan di Supabase!");
+                alert("Data Calon Peserta Didik Berhasil Disimpan ke Supabase!");
                 document.getElementById('formSpmb').reset();
                 fetchData();
             }
@@ -560,21 +599,29 @@
                     <h3>BUKTI PENDAFTARAN SISWA BARU (SPMB TAHUN 2026)</h3>
                 </div>
                 <table class="print-table" style="margin-top:20px;">
-                    <tr><td width="30%"><b>Nomor Pendaftaran</b></td><td>${item.nomor_pendaftaran}</td></tr>
+                    <tr><td width="35%"><b>Nomor Pendaftaran</b></td><td>${item.nomor_pendaftaran}</td></tr>
                     <tr><td><b>Nama Lengkap Siswa</b></td><td>${item.nama_siswa}</td></tr>
                     <tr><td><b>Jenis Kelamin</b></td><td>${item.jenis_kelamin}</td></tr>
                     <tr><td><b>Tempat, Tanggal Lahir</b></td><td>${item.ttl}</td></tr>
                     <tr><td><b>Asal Sekolah (TK/PAUD)</b></td><td>${item.asal_sekolah}</td></tr>
                     <tr><td><b>No. HP / WhatsApp</b></td><td>${item.no_hp}</td></tr>
+                    
+                    <tr><td colspan="2" style="background:#f0f0f0;"><b>DATA ORANG TUA (AYAH)</b></td></tr>
+                    <tr><td><b>Nama Ayah</b></td><td>${item.nama_ayah} (${item.keadaan_ayah})</td></tr>
+                    <tr><td><b>Tahun Lahir / Pendidikan</b></td><td>${item.tahun_lahir_ayah} / ${item.pendidikan_ayah}</td></tr>
+                    <tr><td><b>Pekerjaan / Pendapatan</b></td><td>${item.pendapatan_ayah}</td></tr>
+                    <tr><td><b>Alamat Lengkap Ayah</b></td><td>${item.alamat_ayah}</td></tr>
+                    
                     <tr><td colspan="2" style="background:#f0f0f0;"><b>DATA ORANG TUA (IBU)</b></td></tr>
                     <tr><td><b>Nama Ibu</b></td><td>${item.nama_ibu} (${item.keadaan_ibu})</td></tr>
                     <tr><td><b>Tahun Lahir / Pendidikan</b></td><td>${item.tahun_lahir_ibu} / ${item.pendidikan_ibu}</td></tr>
-                    <tr><td><b>Pendapatan Per Bulan</b></td><td>${item.pendapatan_ibu}</td></tr>
+                    <tr><td><b>Pekerjaan / Pendapatan</b></td><td>${item.pendapatan_ibu}</td></tr>
                     <tr><td><b>Alamat Lengkap Ibu</b></td><td>${item.alamat_ibu}</td></tr>
-                    <tr><td colspan="2" style="background:#f0f0f0;"><b>VALIDASI</b></td></tr>
+                    
+                    <tr><td colspan="2" style="background:#f0f0f0;"><b>VALIDASI DATA</b></td></tr>
                     <tr><td><b>Petugas Penerima</b></td><td>${item.nama_petugas}</td></tr>
                 </table>
-                <div style="margin-top:50px; text-align:right;">
+                <div style="margin-top:40px; text-align:right;">
                     <p>Sanggalea, ____________ 2026</p>
                     <br><br><br>
                     <p>( ________________________ )</p>
@@ -598,6 +645,7 @@
                         <td>${item.nama_siswa}</td>
                         <td>${item.jenis_kelamin}</td>
                         <td>${item.no_hp}</td>
+                        <td>${item.nama_ayah}</td>
                         <td>${item.nama_ibu}</td>
                         <td>${item.nama_petugas}</td>
                     </tr>
@@ -617,6 +665,7 @@
                             <th>Nama Siswa</th>
                             <th>L/P</th>
                             <th>No. HP / WA</th>
+                            <th>Nama Ayah</th>
                             <th>Nama Ibu</th>
                             <th>Petugas Penerima</th>
                         </tr>
