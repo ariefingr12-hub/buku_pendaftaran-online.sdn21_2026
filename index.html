@@ -501,26 +501,27 @@
 
     <script>
         // ==========================================
-        // CONFIG KREDENSIAL (GANTI DENGAN MILIK ANDA)
+        // CONFIG KREDENSIAL
         // ==========================================
         const SUPABASE_URL = "https://wylkasidfbfhowozcuce.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bGthc2lkZmJmaG93b3pjdWNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1OTc2ODAsImV4cCI6MjA5NTE3MzY4MH0.JGkdTtl3Nh1LcDeR_dzC1lMiA_IslkQQ3QJFtu3u07A";
         
-        // PASSWORD PANEL ADMIN (BISA ANDA GANTI SESUAI KEINGINAN)
+        // PASSWORD PANEL ADMIN
         const ADMIN_PASSWORD_KEY = "admin21sanggalea"; 
 
-       // Inisialisasi Supabase
-let supabaseClient = null;
-if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-    console.warn("Supabase belum dikonfigurasi dengan URL yang valid.");
-    document.getElementById('sysStatus').innerText = "LOCAL MODE (NO DATABASE)";
-    document.getElementById('sysStatus').style.color = "#ffaa00";
-}
+        // Inisialisasi Supabase
+        let supabaseClient = null;
+        if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
+            // Catatan: window.supabase di bawah ini harus tetap seperti ini karena memanggil library CDN global
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.warn("Supabase belum dikonfigurasi dengan URL yang valid.");
+            document.getElementById('sysStatus').innerText = "LOCAL MODE (NO DATABASE)";
+            document.getElementById('sysStatus').style.color = "#ffaa00";
+        }
 
-        let currentView = "pendaftaran"; // State views: pendaftaran, security_gate, admin
-        let isAdminAuthenticated = false; // State auth panel admin
+        let currentView = "pendaftaran"; 
+        let isAdminAuthenticated = false; 
         let localDataStore = [];
 
         // Fungsi Handler Tombol Navigasi Utama
@@ -531,7 +532,6 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
             const secAdmin = document.getElementById('sectionAdmin');
 
             if (currentView === "pendaftaran") {
-                // Jika admin sudah pernah login sebelumnya
                 if (isAdminAuthenticated) {
                     currentView = "admin";
                     btn.innerHTML = `<i class="fa-solid fa-file-pen"></i> Ke Form Pendaftaran`;
@@ -539,7 +539,6 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
                     secAdmin.classList.remove('hidden');
                     fetchData();
                 } else {
-                    // Masuk ke screen cek password
                     currentView = "security_gate";
                     btn.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Kembali`;
                     secPendaftaran.classList.add('hidden');
@@ -547,7 +546,6 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
                     document.getElementById('adminPasswordInput').focus();
                 }
             } else if (currentView === "security_gate" || currentView === "admin") {
-                // Kembali ke form pendaftaran awal
                 currentView = "pendaftaran";
                 btn.innerHTML = `<i class="fa-solid fa-user-gear"></i> Ke Panel Admin`;
                 secPendaftaran.classList.remove('hidden');
@@ -568,12 +566,11 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
                 isAdminAuthenticated = true;
                 currentView = "admin";
                 
-                // Ubah Tampilan UI
                 secPasswordGate.classList.add('hidden');
                 secAdmin.classList.remove('hidden');
                 btn.innerHTML = `<i class="fa-solid fa-file-pen"></i> Ke Form Pendaftaran`;
                 
-                fetchData(); // Muat data dari Supabase
+                fetchData(); 
             } else {
                 alert("DEKRIPSI GAGAL: Kode Akses Salah / Akses Ditolak!");
                 document.getElementById('adminPasswordInput').value = "";
@@ -640,21 +637,18 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
                 ttl: document.getElementById('ttl').value,
                 asal_sekolah: document.getElementById('asal_sekolah').value || '-',
                 no_hp: document.getElementById('no_hp').value,
-                // Data Ayah
                 nama_ayah: document.getElementById('nama_ayah').value,
                 keadaan_ayah: document.getElementById('keadaan_ayah').value,
                 tahun_lahir_ayah: document.getElementById('tahun_lahir_ayah').value,
                 pendidikan_ayah: document.getElementById('pendidikan_ayah').value,
                 pendapatan_ayah: document.getElementById('pendapatan_ayah').value || '-',
                 alamat_ayah: document.getElementById('alamat_ayah').value,
-                // Data Ibu
                 nama_ibu: document.getElementById('nama_ibu').value,
                 keadaan_ibu: document.getElementById('keadaan_ibu').value,
                 tahun_lahir_ibu: document.getElementById('tahun_lahir_ibu').value,
                 pendidikan_ibu: document.getElementById('pendidikan_ibu').value,
                 pendapatan_ibu: document.getElementById('pendapatan_ibu').value || 'Ibu Rumah Tangga',
                 alamat_ibu: document.getElementById('alamat_ibu').value,
-                // Admin
                 nama_petugas: document.getElementById('nama_petugas').value
             };
 
@@ -665,7 +659,8 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
             }
 
             try {
-                const { data, error } = await supabase
+                // DI SINI SUDAH FIXED: Diubah dari supabase menjadi supabaseClient
+                const { data, error } = await supabaseClient
                     .from('pendaftaran_spmb_2026')
                     .insert([payload]);
 
@@ -770,7 +765,6 @@ if(SUPABASE_URL && !SUPABASE_URL.includes("YOUR_SUPABASE")) {
             window.print();
         }
 
-        // Izinkan menekan tombol 'Enter' untuk verifikasi password
         document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 verifyAdminPassword();
