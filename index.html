@@ -102,8 +102,8 @@
             .print-header { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; }
             .print-header h2 { font-size: 1.6rem; font-weight: bold; color: #000 !important;}
             .print-header h3 { font-size: 1.1rem; color: #000 !important; margin-top: 5px;}
-            .print-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-            .print-table th, .print-table td { border: 1px solid #000000 !important; padding: 8px 12px !important; color: #000000 !important; background: transparent !important; text-align: left; }
+            .print-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem;}
+            .print-table th, .print-table td { border: 1px solid #000000 !important; padding: 6px 10px !important; color: #000000 !important; background: transparent !important; text-align: left; }
             .print-table th { background-color: #f2f2f2 !important; font-weight: bold; }
         }
     </style>
@@ -130,15 +130,11 @@
             <form id="formSpmb" onsubmit="handleSubmit(event)">
                 
                 <div class="panel-card">
-                    <h2><i class="fa-solid fa-graduation-cap"></i> Data Calon Peserta Didik</h2>
+                    <h2><i class="fa-solid fa-graduation-cap"></i> Data Diri Calon Peserta Didik</h2>
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Nomor Pendaftaran</label>
                             <input type="text" id="nomor_pendaftaran" placeholder="Contoh: 2026-001" required>
-                        </div>
-                        <div class="form-group">
-                            <label>NIK Siswa</label>
-                            <input type="text" id="nik_siswa" placeholder="Masukkan 16 digit NIK Siswa" required>
                         </div>
                         <div class="form-group">
                             <label>Nama Lengkap Siswa</label>
@@ -163,6 +159,46 @@
                         <div class="form-group">
                             <label>No. HP / WhatsApp (Aktif)</label>
                             <input type="text" id="no_hp" placeholder="Contoh: 081234567890" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <h2><i class="fa-solid fa-id-card-clip"></i> Data Dokumen & Kependudukan</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nomor Induk Kependudukan (NIK)</label>
+                            <input type="text" id="nik_siswa" placeholder="16 Digit NIK Siswa" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Kartu Keluarga (KK)</label>
+                            <input type="text" id="no_kk" placeholder="16 Digit Nomor KK" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Akta Kelahiran</label>
+                            <input type="text" id="no_akta" placeholder="Nomor Registrasi Akta" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Ijazah / SKL (TK/PAUD)</label>
+                            <input type="text" id="no_ijazah" placeholder="Kosongkan jika tidak ada">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Nomor Kartu PKH / KIP / Bantuan Sejenisnya</label>
+                            <input type="text" id="no_pkh" placeholder="Kosongkan jika tidak menerima">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <h2><i class="fa-solid fa-child-reaching"></i> Data Fisik</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tinggi Badan (cm)</label>
+                            <input type="number" id="tinggi_badan" placeholder="Contoh: 110" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Berat Badan (kg)</label>
+                            <input type="number" id="berat_badan" placeholder="Contoh: 20" required>
                         </div>
                     </div>
                 </div>
@@ -243,7 +279,7 @@
                             <input type="text" id="nama_petugas" placeholder="Nama Panitia/Petugas" required>
                         </div>
                     </div>
-                    <button type="submit" id="btnSubmitForm" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Submit Data Pendaftaran</button>
+                    <button type="submit" id="btnSubmitForm" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Submit Data Pendaftaran Lengkap</button>
                 </div>
             </form>
         </div>
@@ -263,7 +299,7 @@
         <div id="sectionAdmin" class="panel-card hidden">
             <h2><i class="fa-solid fa-database"></i> Panel Admin Database Pendaftaran</h2>
             <div style="margin-bottom: 20px; display:flex; gap:10px;">
-                <button class="btn-print" onclick="printAll()"><i class="fa-solid fa-print"></i> Cetak Semua Rekapan</button>
+                <button class="btn-print" onclick="printAll()"><i class="fa-solid fa-print"></i> Cetak Daftar Rekapan</button>
                 <button class="btn-print" onclick="fetchData()" style="background: var(--success-neon); color: #000; border: none;"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
             </div>
             <div class="table-responsive">
@@ -271,12 +307,11 @@
                     <thead>
                         <tr>
                             <th>No. Reg</th>
-                            <th>NIK Siswa</th>
                             <th>Nama Siswa</th>
                             <th>L/P</th>
+                            <th>No. KK</th>
                             <th>No. HP</th>
-                            <th>Nama Ayah</th>
-                            <th>Nama Ibu</th>
+                            <th>Petugas</th>
                             <th class="no-print">Aksi Interaktif</th>
                         </tr>
                     </thead>
@@ -294,7 +329,7 @@
         // =========================================================================
         // GANTI URL DI BAWAH INI DENGAN URL DEPLOY APLIKASI WEB GOOGLE APPS SCRIPT
         // =========================================================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbz-qPI7HQKtKkjnU4qjSJn1uLpt8HKWhLf9VWPcId9rxAesGcpYfN_LAveE8A7DjcI0Qw/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwAAyoyMeJzFnZk5GN6LlGEmwEL_pIai9rCwHHE_3aFy-uMW7nrbYmvUj8YWlyYARQ2zA/exec";
         const ADMIN_PASSWORD_KEY = "admin21sanggalea"; 
 
         let currentView = "pendaftaran"; 
@@ -340,11 +375,9 @@
             if (inputPass === ADMIN_PASSWORD_KEY) {
                 isAdminAuthenticated = true;
                 currentView = "admin";
-                
                 secPasswordGate.classList.add('hidden');
                 secAdmin.classList.remove('hidden');
                 btn.innerHTML = `<i class="fa-solid fa-file-pen"></i> Ke Form Pendaftaran`;
-                
                 fetchData(); 
             } else {
                 alert("SANDI SALAH: Akses Menuju Database Rekapitulasi Ditolak!");
@@ -355,10 +388,10 @@
 
         async function fetchData() {
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Mengunduh Berkas dari Google Sheets...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Mengunduh Berkas dari Google Sheets...</td></tr>`;
 
             if(GAS_URL === "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_KAMU_DISINI") {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger-neon);">Error: URL Google Apps Script belum disetting di kode HTML.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger-neon);">Error: URL Google Apps Script belum disetting di kode HTML.</td></tr>`;
                 return;
             }
 
@@ -370,30 +403,29 @@
                 tbody.innerHTML = "";
 
                 if(data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada riwayat pendaftaran terkumpul.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Belum ada riwayat pendaftaran terkumpul.</td></tr>`;
                     return;
                 }
 
                 data.forEach((item, index) => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><b>${item['No. Pendaftaran']}</b></td>
-                        <td>${item['NIK Siswa'] || '-'}</td>
-                        <td>${item['Nama Siswa']}</td>
+                        <td><b>${item['No. Pendaftaran'] || '-'}</b></td>
+                        <td>${item['Nama Siswa'] || '-'}</td>
                         <td>${item['L/P'] === 'Laki-laki' ? 'L' : 'P'}</td>
-                        <td>${item['No. HP']}</td>
-                        <td>${item['Nama Ayah'] || '-'}</td>
-                        <td>${item['Nama Ibu']}</td>
+                        <td>${item['No. KK'] || '-'}</td>
+                        <td>${item['No. HP'] || '-'}</td>
+                        <td>${item['Petugas'] || '-'}</td>
                         <td class="no-print">
                             <div class="action-buttons">
-                                <button class="btn-print" onclick="printSingle(${index})"><i class="fa-solid fa-print"></i> Cetak</button>
+                                <button class="btn-print" onclick="printSingle(${index})"><i class="fa-solid fa-print"></i> Cetak Detail</button>
                             </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger-neon);">Koneksi terputus ke database Google Sheets. Pastikan URL sudah benar.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger-neon);">Koneksi terputus ke database Google Sheets. Pastikan URL sudah benar.</td></tr>`;
             }
         }
 
@@ -411,13 +443,26 @@
             btnSubmit.disabled = true;
 
             const payload = {
+                // Data Diri
                 nomor_pendaftaran: document.getElementById('nomor_pendaftaran').value,
-                nik_siswa: document.getElementById('nik_siswa').value,
                 nama_siswa: document.getElementById('nama_siswa').value,
                 jenis_kelamin: document.getElementById('jenis_kelamin').value,
                 ttl: document.getElementById('ttl').value,
                 asal_sekolah: document.getElementById('asal_sekolah').value || '-',
                 no_hp: document.getElementById('no_hp').value,
+
+                // Data Dokumen
+                nik_siswa: document.getElementById('nik_siswa').value,
+                no_kk: document.getElementById('no_kk').value,
+                no_akta: document.getElementById('no_akta').value,
+                no_ijazah: document.getElementById('no_ijazah').value || '-',
+                no_pkh: document.getElementById('no_pkh').value || '-',
+
+                // Data Fisik (Tanpa riwayat penyakit)
+                tinggi_badan: document.getElementById('tinggi_badan').value,
+                berat_badan: document.getElementById('berat_badan').value,
+
+                // Data Orang Tua & Petugas
                 nama_ayah: document.getElementById('nama_ayah').value,
                 keadaan_ayah: document.getElementById('keadaan_ayah').value,
                 tahun_lahir_ayah: document.getElementById('tahun_lahir_ayah').value,
@@ -443,7 +488,7 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    alert("Berhasil! Data Calon Peserta Didik telah tersimpan di Google Sheets.");
+                    alert("Berhasil! Data Lengkap Calon Peserta Didik telah tersimpan di Google Sheets.");
                     document.getElementById('formSpmb').reset();
                 } else {
                     throw new Error(result.message);
@@ -464,31 +509,33 @@
             printArea.innerHTML = `
                 <div class="print-header">
                     <h2>UPTD SDN 21 SANGGALEA</h2>
-                    <h3>BUKTI PENDAFTARAN SISWA BARU (SPMB TAHUN 2026)</h3>
+                    <h3>BUKTI PENDAFTARAN LENGKAP (SPMB TAHUN 2026)</h3>
                 </div>
                 <table class="print-table">
-                    <tr><td width="35%"><b>Nomor Pendaftaran</b></td><td>${item['No. Pendaftaran']}</td></tr>
-                    <tr><td><b>NIK Siswa</b></td><td>${item['NIK Siswa']}</td></tr>
-                    <tr><td><b>Nama Lengkap Siswa</b></td><td>${item['Nama Siswa']}</td></tr>
-                    <tr><td><b>Jenis Kelamin</b></td><td>${item['L/P']}</td></tr>
-                    <tr><td><b>Tempat, Tanggal Lahir</b></td><td>${item['TTL']}</td></tr>
-                    <tr><td><b>Asal Sekolah (TK/PAUD)</b></td><td>${item['Asal Sekolah']}</td></tr>
-                    <tr><td><b>No. HP / WhatsApp</b></td><td>${item['No. HP']}</td></tr>
+                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA DIRI SISWA</td></tr>
+                    <tr><td width="35%"><b>Nomor Pendaftaran</b></td><td>${item['No. Pendaftaran'] || '-'}</td></tr>
+                    <tr><td><b>Nama Lengkap Siswa</b></td><td>${item['Nama Siswa'] || '-'}</td></tr>
+                    <tr><td><b>Jenis Kelamin</b></td><td>${item['L/P'] || '-'}</td></tr>
+                    <tr><td><b>Tempat, Tanggal Lahir</b></td><td>${item['TTL'] || '-'}</td></tr>
+                    <tr><td><b>Asal Sekolah (TK/PAUD)</b></td><td>${item['Asal Sekolah'] || '-'}</td></tr>
+                    <tr><td><b>No. HP / WhatsApp</b></td><td>${item['No. HP'] || '-'}</td></tr>
                     
-                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA ORANG TUA (AYAH)</td></tr>
-                    <tr><td><b>Nama Ayah</b></td><td>${item['Nama Ayah']} (${item['Keadaan Ayah']})</td></tr>
-                    <tr><td><b>Tahun Lahir / Pendidikan</b></td><td>${item['Thn Lahir Ayah']} / ${item['Pendidikan Ayah']}</td></tr>
-                    <tr><td><b>Pekerjaan / Pendapatan</b></td><td>${item['Pendapatan Ayah']}</td></tr>
-                    <tr><td><b>Alamat Lengkap Ayah</b></td><td>${item['Alamat Ayah']}</td></tr>
-                    
-                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA ORANG TUA (IBU)</td></tr>
-                    <tr><td><b>Nama Ibu</b></td><td>${item['Nama Ibu']} (${item['Keadaan Ibu']})</td></tr>
-                    <tr><td><b>Tahun Lahir / Pendidikan</b></td><td>${item['Thn Lahir Ibu']} / ${item['Pendidikan Ibu']}</td></tr>
-                    <tr><td><b>Pekerjaan / Pendapatan</b></td><td>${item['Pendapatan Ibu']}</td></tr>
-                    <tr><td><b>Alamat Lengkap Ibu</b></td><td>${item['Alamat Ibu']}</td></tr>
+                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA DOKUMEN & FISIK</td></tr>
+                    <tr><td><b>Nomor Kartu Keluarga</b></td><td>${item['No. KK'] || '-'}</td></tr>
+                    <tr><td><b>NIK Siswa</b></td><td>${item['NIK Siswa'] || '-'}</td></tr>
+                    <tr><td><b>Nomor Akta Kelahiran</b></td><td>${item['No. Akta Kelahiran'] || '-'}</td></tr>
+                    <tr><td><b>Nomor Ijazah / SKL</b></td><td>${item['No. Ijazah / SKL'] || '-'}</td></tr>
+                    <tr><td><b>Nomor PKH / Bantuan</b></td><td>${item['No. PKH / Bantuan'] || '-'}</td></tr>
+                    <tr><td><b>Tinggi & Berat Badan</b></td><td>${item['Tinggi Badan (cm)'] || '-'} cm / ${item['Berat Badan (kg)'] || '-'} kg</td></tr>
+
+                    <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">DATA ORANG TUA (AYAH & IBU)</td></tr>
+                    <tr><td><b>Nama Ayah & Keadaan</b></td><td>${item['Nama Ayah'] || '-'} (${item['Keadaan Ayah'] || '-'})</td></tr>
+                    <tr><td><b>Nama Ibu & Keadaan</b></td><td>${item['Nama Ibu'] || '-'} (${item['Keadaan Ibu'] || '-'})</td></tr>
+                    <tr><td><b>Pekerjaan Ayah / Ibu</b></td><td>${item['Pendapatan Ayah'] || '-'} / ${item['Pendapatan Ibu'] || '-'}</td></tr>
+                    <tr><td><b>Alamat Lengkap</b></td><td>${item['Alamat Ayah'] || '-'}</td></tr>
                     
                     <tr><td colspan="2" style="background:#f2f2f2; font-weight:bold; text-align:center;">VALIDASI DATA</td></tr>
-                    <tr><td><b>Petugas Penerima</b></td><td>${item['Petugas']}</td></tr>
+                    <tr><td><b>Petugas Penerima</b></td><td>${item['Petugas'] || '-'}</td></tr>
                 </table>
                 <div style="margin-top:40px; text-align:right; font-family:sans-serif;">
                     <p>Sanggalea, ____________ 2026</p>
@@ -505,21 +552,20 @@
 
             const printArea = document.getElementById('printArea');
             let tableRows = "";
-            
             const printData = [...localDataStore].reverse();
 
             printData.forEach((item, index) => {
                 tableRows += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${item['No. Pendaftaran']}</td>
-                        <td>${item['NIK Siswa']}</td>
-                        <td>${item['Nama Siswa']}</td>
+                        <td>${item['No. Pendaftaran'] || '-'}</td>
+                        <td>${item['Nama Siswa'] || '-'}</td>
                         <td>${item['L/P'] === 'Laki-laki' ? 'L' : 'P'}</td>
-                        <td>${item['No. HP']}</td>
-                        <td>${item['Nama Ayah']}</td>
-                        <td>${item['Nama Ibu']}</td>
-                        <td>${item['Petugas']}</td>
+                        <td>${item['No. KK'] || '-'}</td>
+                        <td>${item['NIK Siswa'] || '-'}</td>
+                        <td>${item['Tinggi Badan (cm)'] || '-'}/${item['Berat Badan (kg)'] || '-'}</td>
+                        <td>${item['Nama Ayah'] || '-'}<br>${item['Nama Ibu'] || '-'}</td>
+                        <td>${item['No. HP'] || '-'}</td>
                     </tr>
                 `;
             });
@@ -527,20 +573,20 @@
             printArea.innerHTML = `
                 <div class="print-header">
                     <h2>UPTD SDN 21 SANGGALEA</h2>
-                    <h3>REKAPITULASI BUKU PENDAFTARAN SPMB TAHUN 2026</h3>
+                    <h3>REKAPITULASI PENDAFTARAN SPMB TAHUN 2026</h3>
                 </div>
                 <table class="print-table">
                     <thead>
                         <tr>
                             <th>No</th>
                             <th>No. Registrasi</th>
-                            <th>NIK Siswa</th>
                             <th>Nama Siswa</th>
                             <th>L/P</th>
+                            <th>No. KK</th>
+                            <th>NIK Siswa</th>
+                            <th>TB/BB</th>
+                            <th>Nama Orang Tua</th>
                             <th>No. HP / WA</th>
-                            <th>Nama Ayah</th>
-                            <th>Nama Ibu</th>
-                            <th>Petugas Penerima</th>
                         </tr>
                     </thead>
                     <tbody>
